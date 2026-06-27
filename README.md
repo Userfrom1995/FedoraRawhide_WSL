@@ -1,7 +1,9 @@
-Fedora 43 for WSL
-==================
+Fedora Rawhide for WSL
+======================
 
-This project provides a ready-to-use Fedora 43 root filesystem packaged as a `.wsl` archive for use with Windows Subsystem for Linux (WSL). It allows you to install and run Fedora 43 on Windows without needing the Microsoft Store.
+This project provides a ready-to-use Fedora Rawhide root filesystem packaged as a `.wsl` archive for use with Windows Subsystem for Linux (WSL). It allows you to install and run Fedora Rawhide on Windows without needing the Microsoft Store.
+
+Because Rawhide is Fedora's rolling release, this package never needs a version bump — rebuilding always produces the latest Rawhide snapshot.
 
 The package is designed to help users get started quickly with a minimal, working Fedora environment on WSL 2.
 **This release supports systemd** out-of-the-box.
@@ -10,7 +12,7 @@ The package is designed to help users get started quickly with a minimal, workin
 How to Get Started
 -------------------------------------------------------
 
-1. Download the Fedora 43 `.wsl` package:
+1. Download the Fedora Rawhide `.wsl` package:
    - From the GitHub Releases section
 
 2. Install the distro into WSL:
@@ -18,14 +20,14 @@ How to Get Started
    PowerShell or Windows Terminal from a normal Windows path such as `Downloads` or `C:\WSL`:
 
    ```
-   wsl --install --from-file C:\path\to\Fedora43-WSL.wsl
+   wsl --install --from-file C:\path\to\Fedora-Rawhide-WSL.wsl
    ```
 
    You can also install it by double-clicking the `.wsl` file in File Explorer.
    If you want to override the default registration name, use:
 
    ```
-   wsl --install --from-file C:\path\to\Fedora43-WSL.wsl --name MyFedora43
+   wsl --install --from-file C:\path\to\Fedora-Rawhide-WSL.wsl --name fedora-rawhide
    ```
 
    Avoid launching the installer from a `\\wsl.localhost\...` path. WSL may try to inherit that UNC working directory when it auto-launches the new distro after installation, which can produce a harmless `Failed to translate '\\wsl.localhost\...'` warning.
@@ -33,7 +35,7 @@ How to Get Started
 3. Launch Fedora:
 
    ```
-   wsl -d Fedora43
+   wsl -d fedora-rawhide
    ```
 
 4. Complete the first-run setup:
@@ -81,10 +83,10 @@ Transparency and Build Steps
 This repository also includes the build script used to generate the release artifact:
 
 ```bash
-./fedora43/build-fedora43.sh
+./rawhide/build-rawhide.sh
 ```
 
-The script builds the root filesystem, applies the WSL overlay, and emits `fedora43/Fedora43-WSL.wsl`.
+The script builds the root filesystem from Fedora Rawhide's rolling repository, applies the WSL overlay, and emits `rawhide/Fedora-Rawhide-WSL.wsl`.
 
 -------------------------------------------------------
 License

@@ -1,35 +1,40 @@
 #!/bin/bash
-# Fedora 43 WSL rootfs builder and packager.
+# Fedora Rawhide WSL rootfs builder and packager.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXPORT_DIR="$SCRIPT_DIR/rootfs"
 OVERLAY_DIR="$SCRIPT_DIR/rootfs-overlay"
-OUTPUT_WSL="$SCRIPT_DIR/Fedora43-WSL.wsl"
-RELEASE_VER="43"
+OUTPUT_WSL="$SCRIPT_DIR/Fedora-Rawhide-WSL.wsl"
+RELEASE_VER="rawhide"
 OWNER_UID="$(id -u)"
 OWNER_GID="$(id -g)"
 
-echo "Creating Fedora $RELEASE_VER rootfs in $EXPORT_DIR..."
+echo "Creating Fedora Rawhide rootfs in $EXPORT_DIR..."
 sudo rm -rf "$EXPORT_DIR"
 mkdir -p "$EXPORT_DIR"
 
-# Build the rootfs using dnf5 --installroot
+# Bootstrap rpmdb and import the current Rawhide signing key
+# from distribution-gpg-keys (same method KIWI/image-builder use).
+# This avoids stale-key failures when Rawhide bumps releases.
+sudo rpm --root "$EXPORT_DIR" --initdb
+sudo rpm --root "$EXPORT_DIR" --import /usr/share/distribution-gpg-keys/fedora/RPM-GPG-KEY-fedora-rawhide-primary
+
 echo "Initializing rootfs with fedora-release and fedora-repos..."
 sudo dnf5 install --installroot="$EXPORT_DIR" \
   --releasever="$RELEASE_VER" \
   --setopt=install_weak_deps=False \
-  --disablerepo="*" --enablerepo="fedora,updates" \
-  --use-host-config \
+  --setopt=reposdir=/etc/yum.repos.d \
+  --disablerepo="*" --enablerepo="fedora" \
   --nodocs -y fedora-release fedora-repos
 
 echo "Installing core packages..."
 sudo dnf5 install --installroot="$EXPORT_DIR" \
   --releasever="$RELEASE_VER" \
   --setopt=install_weak_deps=False \
-  --disablerepo="*" --enablerepo="fedora,updates" \
-  --use-host-config \
+  --setopt=reposdir=/etc/yum.repos.d \
+  --disablerepo="*" --enablerepo="fedora" \
   --nodocs -y \
   @core sudo passwd shadow-utils util-linux dnf5 iputils cracklib-dicts \
   wget tar gzip findutils which procps-ng \
@@ -52,12 +57,18 @@ sudo chown root:root \
   "$EXPORT_DIR/etc/oobe.sh" \
   "$EXPORT_DIR/etc/wsl.conf" \
   "$EXPORT_DIR/etc/wsl-distribution.conf" \
-  "$EXPORT_DIR/usr/lib/wsl/terminal-profile.json"
+  "$EXPORT_DIR/usr/lib/wsl/terminal-profile.json" \
+  "$EXPORT_DIR/usr/lib/systemd/system/systemd-firstboot.service.d/override.conf" \
+  "$EXPORT_DIR/usr/lib/tmpfiles.d/wsl-setup.conf" \
+  "$EXPORT_DIR/usr/share/user-tmpfiles.d/wsl-setup.conf"
 sudo chmod 0755 "$EXPORT_DIR/etc/oobe.sh"
 sudo chmod 0644 \
   "$EXPORT_DIR/etc/wsl.conf" \
   "$EXPORT_DIR/etc/wsl-distribution.conf" \
-  "$EXPORT_DIR/usr/lib/wsl/terminal-profile.json"
+  "$EXPORT_DIR/usr/lib/wsl/terminal-profile.json" \
+  "$EXPORT_DIR/usr/lib/systemd/system/systemd-firstboot.service.d/override.conf" \
+  "$EXPORT_DIR/usr/lib/tmpfiles.d/wsl-setup.conf" \
+  "$EXPORT_DIR/usr/share/user-tmpfiles.d/wsl-setup.conf"
 
 # Final cleanup
 echo "Cleaning up..."

@@ -1,15 +1,14 @@
-mkdir -p $HOME/fedora42-rootfs
+mkdir -p $HOME/rawhide-rootfs
 
-sudo dnf install --installroot=$HOME/fedora42-rootfs \
-  --releasever=42 \
+sudo dnf5 install --installroot=$HOME/rawhide-rootfs \
+  --releasever=rawhide \
   --setopt=install_weak_deps=False \
-  --setopt=module_platform_id=platform:f42 \
+  --disablerepo="*" --enablerepo=fedora \
   --use-host-config \
   --nodocs -y @core
 
-
-cd $HOME/fedora42-rootfs
-sudo tar --numeric-owner -czf $HOME/Fedora42-rootfs.tar.gz .
+cd $HOME/rawhide-rootfs
+sudo tar --numeric-owner --xattrs --acls -czf $HOME/Fedora-Rawhide-rootfs.tar.gz .
 
 
 

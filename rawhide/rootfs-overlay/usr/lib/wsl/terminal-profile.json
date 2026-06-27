@@ -1,14 +1,14 @@
 {
   "profiles": [
     {
-      "colorScheme": "Fedora 43",
+      "colorScheme": "Fedora Rawhide",
       "fontFace": "Cascadia Mono",
       "useAcrylic": false
     }
   ],
   "schemes": [
     {
-      "name": "Fedora 43",
+      "name": "Fedora Rawhide",
       "black": "#1f1d2b",
       "red": "#c01c28",
       "green": "#26a269",

@@ -1,4 +1,4 @@
-fedora43/rootfs/
+rawhide/rootfs/
 .vscode/
 .specstory/
-fedora43/Fedora43-WSL.wsl
+rawhide/Fedora-Rawhide-WSL.wsl
